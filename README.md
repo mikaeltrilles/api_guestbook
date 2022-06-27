@@ -197,3 +197,8 @@ symfony composer require symfony/maker-bundle --dev
 
   Success!
 ```
+* Installation d'API Platform
+
+```BASH
+symfony composer req api
+```
