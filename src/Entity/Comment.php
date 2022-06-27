@@ -77,9 +77,9 @@ class Comment
         return $this;
     }
 
-    public function getShortText():string
+    public function getShortText(): ?string
     {
-        if (strlen($this->text) <20) {
+        if (strlen($this->text) < 20) {
             return $this->text;
         }
         return substr($this->text, 0, 20).'...';
@@ -100,6 +100,15 @@ class Comment
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    // Ajouter un getter getAge() qui retourne un info sur le délai de création du commentaire. Par exemple « Créé il y a 2 heures et 5 minutes »
+    public function getAge(): ?string
+    {
+        $now = new \DateTimeImmutable();
+        $diff = $now->diff($this->createdAt);
+        $age = $diff->format('%a jours, %h heures, %i minutes et %s secondes');
+        return $age;
     }
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
