@@ -10,9 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[ApiResource(
-    shortName:'conf',
     collectionOperations:['get', 'post'],
-    itemOperations:['get', 'put', 'delete', 'patch']
+    itemOperations:['get', 'delete']
 )]
 class Conference
 {
