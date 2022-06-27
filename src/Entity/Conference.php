@@ -11,16 +11,20 @@ use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[ApiResource(
     collectionOperations:['get', 'post'],
-    itemOperations:['get', 'delete']
+    itemOperations:['get', 'delete'],
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']]
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isInternational'])]
 #[ApiFilter(SearchFilter::class, properties: ['city' => 'partial'])]
 #[ApiFilter(SearchFilter::class, properties: ['year' => 'start'])]
 #[ApiFilter(PropertyFilter::class)]
+
 
 class Conference
 {
@@ -30,12 +34,16 @@ class Conference
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['read','write'])]
     private $city;
 
     #[ORM\Column(type: 'string', length: 4)]
+    #[Groups(['read','write'])]
     private $year;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['read'])]
+
     private $isInternational;
 
     #[ORM\OneToMany(mappedBy: 'conference', targetEntity: Comment::class, orphanRemoval: true)]
