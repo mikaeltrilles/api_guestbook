@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,6 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
     collectionOperations:['get' , 'post'],
     itemOperations:['get']
 )]
+#[ApiFilter(SearchFilter::class, properties: ['author' => 'ipartial'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+#[ApiFilter(RangeFilter::class, properties: ['note'])]
+#[ApiFilter(PropertyFilter::class)]
+
 class Comment
 {
     #[ORM\Id]
@@ -65,6 +75,14 @@ class Comment
         $this->text = $text;
 
         return $this;
+    }
+
+    public function getShortText():string
+    {
+        if (strlen($this->text) <20) {
+            return $this->text;
+        }
+        return substr($this->text, 0, 20).'...';
     }
 
     public function getEmail(): ?string

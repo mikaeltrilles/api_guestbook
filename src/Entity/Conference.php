@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
     collectionOperations:['get', 'post'],
     itemOperations:['get', 'delete']
 )]
+#[ApiFilter(BooleanFilter::class, properties: ['isInternational'])]
+#[ApiFilter(SearchFilter::class, properties: ['city' => 'partial'])]
+#[ApiFilter(SearchFilter::class, properties: ['year' => 'start'])]
+#[ApiFilter(PropertyFilter::class)]
+
 class Conference
 {
     #[ORM\Id]
