@@ -10,4 +10,7 @@ symfony new api_guestbook
 cd api_guestbook
 symfony composer req orm
 ```
-*
+* Reprennons la base de données du projet guestbook avec la même configuration a rajouter dans le .env
+```PHP
+DATABASE_URL="mysql://guestbook:guestbook@127.0.0.1:3306/guestbook?serverVersion=5.7.34"
+```
