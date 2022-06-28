@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <div id="not-connected">
+        <h1>Connexion</h1>
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password">
+        </div>
+        <div>
+            <button type="button" onclick="javascript:login_check()">Connexion</button>
+        </div>
+    </div>
+
+    <div id="connected" style="display: none;">
+        <div>
+            <h2>Ajout d'une conférence</h2>
+            <div style="width: 28%; display: inline-block">
+                <label for="newCity">Ville</label>
+                <input type="text" id="newCity">
+            </div>
+            <div style="width: 28%; display: inline-block">
+                <label for="newYear">Année</label>
+                <input type="text" id="newYear">
+            </div>
+            <div style="width: 25%; display: inline-block">
+                <label for="newIsInternational">International ?</label>
+                <input type="checkbox" id="newIsInternational">
+            </div>
+            <div style="width: 15%; display: inline-block">
+                <button type="button" id="newConf" disabled onclick="javascript:new_conference()">Ajouter</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div>
+            <h2>Recherche de conférence</h2>
+            <div style="width: 28%; display: inline-block">
+                <label for="city">Ville</label>
+                <input type="text" id="city">
+            </div>
+            <div style="width: 28%; display: inline-block">
+                <label for="year">Année</label>
+                <input type="text" id="year">
+            </div>
+            <div style="width: 25%; display: inline-block">
+                <label for="isInternational">International ?</label>
+                <select id="isInternational">
+                    <option value="" selected></option>
+                    <option value="1">Oui</option>
+                    <option value="0">Non</option>
+                </select>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" id="getConf" disabled onclick="javascript:get_conferences()">Rechercher</button>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" id="viewConf" onclick="javascript:view_conferences()">Voir Liste</button>
+            </div>
+            <table id="liste">
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let token = "";
+    document.getElementById("getConf").disabled = true;
+    document.getElementById("newConf").disabled = true;
+    document.getElementById("not-connected").style.display = "block";
+    document.getElementById("connected").style.display = "none";
+
+    function login_check() {
+        let requestInfo = {
+            method: 'POST',
+            body: JSON.stringify({
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        fetch('/api/login_check', requestInfo)
+            .then(function(response) {
+                if (response.ok) {
+                    response.json().then(function(json) {
+                        token = json.token;
+                        document.getElementById("getConf").disabled = false;
+                        document.getElementById("newConf").disabled = false;
+                        document.getElementById("not-connected").style.display = "none";
+                        document.getElementById("connected").style.display = "block";
+                    })
+                } else {
+                    if (response.status == 401) {
+                        alert('Mauvais login ou mot de passe');
+                    } else {
+                        alert('Mauvaise réponse du réseau');
+                    }
+                }
+            })
+            .catch(function(error) {
+                alert('error=' + error);
+            });
+    }
+
+    function new_conference() {
+        if (token === "") {
+            alert('Token non défini');
+            return;
+        }
+        let requestInfo = {
+            method: 'POST',
+            body: JSON.stringify({
+                city: document.getElementById("newCity").value,
+                year: document.getElementById("newYear").value,
+                isInternational: document.getElementById("newIsInternational").checked
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        };
+
+        fetch('/api/conferences', requestInfo)
+            .then(function(response) {
+                if (response.ok) {
+                    alert("Conférence créée avec succés");
+                    get_conferences();
+                } else {
+                    alert('Mauvaise réponse du réseau');
+                }
+            })
+            .catch(function(error) {
+                alert('error=' + error);
+            });
+    }
+
+    {# Affichage de la liste des conferences #}
+    function view_conferences() {
+
+    }
+
+
+    function get_conferences() {
+        alert('Recherche des conférences à coder...')
+    }
+
+    function del_conference(id) {
+        alert('Supression des conférences à coder...')
+    }
+</script>
+
+{% endblock %}

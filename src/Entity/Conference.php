@@ -31,6 +31,7 @@ class Conference
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -42,7 +43,7 @@ class Conference
     private $year;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['read'])]
+    #[Groups(['read','write'])]
 
     private $isInternational;
 
