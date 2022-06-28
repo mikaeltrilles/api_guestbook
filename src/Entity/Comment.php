@@ -11,19 +11,23 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ApiResource(
     shortName:'commentaire',
     collectionOperations:['get' , 'post'],
-    itemOperations:['get'],
+    itemOperations:['get','patch'],
     normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']]
+    denormalizationContext: ['groups' => ['write']],
+    attributes: ['pagination_enabled' => false],
+    formats: ['jsonld', 'json', 'html','csv' =>['text/csv']]
 )]
 #[ApiFilter(SearchFilter::class, properties: ['author' => 'ipartial'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ApiFilter(RangeFilter::class, properties: ['note'])]
 #[ApiFilter(PropertyFilter::class)]
+
 
 class Comment
 {
@@ -42,18 +46,26 @@ class Comment
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['read','write'])]
+    #[Assert\Email(
+        message: 'Le email {{ value }} n\'est pas un mail valide.',
+    )]
     private $email;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
 
     #[ORM\Column(type: 'smallint', nullable: true)]
-    #[Groups(['read'])]
+    #[Groups(['read','write'])]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'La note doit être comprise entre 1 et 5.'
+    )]
     private $note;
 
     #[ORM\ManyToOne(targetEntity: Conference::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read','write'])]
+    // #[Groups(['read','write'])]
 
     private $conference;
 
