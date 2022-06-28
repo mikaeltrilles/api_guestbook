@@ -7,6 +7,8 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
@@ -21,15 +23,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(["read", "write"])]
+    #[Assert\NotBlank()]
+    #[Assert\Email(message: "L'adresse mail {{ value }} n'est pas valide")]
     private $email;
 
     #[ORM\Column(type: 'json')]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Groups(["write"])]
+    #[Assert\NotBlank()]
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["read", "write"])]
+    #[Assert\NotBlank()]
     private $name;
 
     public function getId(): ?int
